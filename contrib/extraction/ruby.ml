@@ -20,7 +20,7 @@ open Mlutil
 open Table
 open Common
 
-(*s Scheme renaming issues. *)
+let (@@) f g = f g
 
 let keywords =
   List.fold_right (fun s -> Idset.add (id_of_string s))
@@ -35,7 +35,10 @@ let keywords =
 let preamble _ _ usf =
   str "# This extracted Ruby Code\n"
   ++ str "# available at \n"
-  ++ (if usf.mldummy then str "def __; end\n\n" else mt ())
+  ++ (if usf.mldummy then str "def __; end\n" else mt ())
+  ++ str "def let(x,&f); f.call(x) end\n"
+  ++ str "def match(expr, *fs); tag,args = expr; _,f = fs.assoc(tag); f.call(*args) end\n"
+  ++ str "\n"
 
 let pr_id id =
   let s = string_of_id id in
@@ -44,12 +47,14 @@ let pr_id id =
   done;
   str s
 
-let paren = pp_par false
+let paren = pp_par true
 let brace   st = str "{" ++ st ++ str "}"
 let bracket st = str "[" ++ st ++ str "]"
 let pipe    st = str "|" ++ st ++ str "|"
 let def name st =
   str "def " ++ name ++ fnl () ++ (hov 4 st) ++ str "\nend"
+let let_ name value st =
+  str "let(" ++ value ++ str ")" ++ brace (pipe name ++ st)
 
 let rec pp_abst st = function
   | [] -> st
@@ -83,29 +88,29 @@ let rec pp_expr env args =
 	apply
 	  (hv 0
 	     (hov 2
-		(paren
-		   (str "let " ++
-		    paren
-		      (paren
-			 (pr_id (List.hd i) ++ spc () ++ pp_expr env [] a1))
-		    ++ spc () ++ hov 0 (pp_expr env' [] a2)))))
+		(let_ (pr_id (List.hd i))
+		   (pp_expr env [] a1)
+		   (pp_expr env' [] a2))))
     | MLglob r ->
 	apply (pp_global Term r)
     | MLcons (i,r,args') ->
 	assert (args=[]);
 	let st =
-	  str "`" ++
-	  paren (pp_global Cons r ++
-		 (if args' = [] then mt () else spc ()) ++
-		 prlist_with_sep spc (pp_cons_args env) args')
+	  bracket @@
+	    str ":" ++ pp_global Cons r
+	  ++ str ","
+	  ++ bracket (prlist_with_sep spc (pp_cons_args env) args')
 	in
-	if i = Coinductive then paren (str "delay " ++ st) else st
+	if i = Coinductive then
+	  str "lambda" ++ brace st
+	else
+	  st
     | MLcase ((i,_),t, pv) ->
 	let e =
 	  if i <> Coinductive then pp_expr env [] t
-	  else paren (str "force" ++ spc () ++ pp_expr env [] t)
+	  else pp_expr env [] t ++  str ".call()"
 	in
-	apply (v 3 (paren (str "match " ++ e ++ fnl () ++ pp_pat env pv)))
+	apply (v 3 (str "match" ++ paren (e ++ str "," ++ pp_pat env pv)))
     | MLfix (i,ids,defs) ->
 	let ids',env' = push_vars (List.rev (Array.to_list ids)) env in
       	pp_fix env' i (Array.of_list (List.rev ids'),defs) args
@@ -120,24 +125,27 @@ let rec pp_expr env args =
 
 and pp_cons_args env = function
   | MLcons (i,r,args) when i<>Coinductive ->
-      paren (pp_global Cons r ++
-	     (if args = [] then mt () else spc ()) ++
-	     prlist_with_sep spc (pp_cons_args env) args)
+      bracket @@
+	str ":" ++ pp_global Cons r
+      ++ str ","
+      ++ bracket (prlist_with_sep spc (pp_cons_args env) args)
   | e -> str "," ++ pp_expr env [] e
 
 
 and pp_one_pat env (r,ids,t) =
-  let ids,env' = push_vars (List.rev ids) env in
+  let ids,env' =
+    push_vars (List.rev ids) env in
   let args =
     if ids = [] then mt ()
-    else (str " " ++ prlist_with_sep spc pr_id (List.rev ids))
+    else pipe @@ prlist_with_sep (fun _ -> str ",") pr_id (List.rev ids)
   in
-  (pp_global Cons r ++ args), (pp_expr env' [] t)
+    (str ":" ++ (pp_global Cons r)),args, (pp_expr env' [] t)
 
 and pp_pat env pv =
-  prvect_with_sep fnl
-    (fun x -> let s1,s2 = pp_one_pat env x in
-     hov 2 (str "((" ++ s1 ++ str ")" ++ spc () ++ s2 ++ str ")")) pv
+  prvect_with_sep (fun _ -> str "," ++ fnl ())
+    (fun x -> let s1,s2,s3 = pp_one_pat env x in
+       hov 2 (bracket (s1 ++ str ", lambda" ++ brace (s2 ++ s3))))
+    pv
 
 (*s names of the functions ([ids]) are already pushed in [env],
     and passed here just for convenience. *)
