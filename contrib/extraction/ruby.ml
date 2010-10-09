@@ -49,21 +49,18 @@ let brace   st = str "{" ++ st ++ str "}"
 let bracket st = str "[" ++ st ++ str "]"
 let pipe    st = str "|" ++ st ++ str "|"
 let def name st =
-  (str "def ") ++ name ++ (str ";") ++ st ++ (str " end")
+  str "def " ++ name ++ fnl () ++ (hov 4 st) ++ str "\nend"
 
 let rec pp_abst st = function
   | [] -> st
-  | x::xs ->
+  | arg::args ->
       str "lambda" ++
-	brace (pipe (pr_id x) ++ pp_abst st xs)
+	brace (pipe (pr_id arg) ++ pp_abst st args)
 
-let pp_apply st _ = function
+let rec pp_apply st _x = function
   | [] -> st
-  | [a] -> hov 2 (paren (st ++ spc () ++ a))
-  | args -> hov 2 (paren (str "@ " ++ st ++
-			  (prlist_strict (fun x -> spc () ++ x) args)))
-
-(*s The pretty-printer for Scheme syntax *)
+  | arg::args ->
+      hov 2 (pp_apply (st ++ str ".call(" ++ arg ++ str ")") _x args)
 
 let pp_global k r = str (Common.pp_global k r)
 
