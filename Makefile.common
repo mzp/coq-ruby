@@ -16,7 +16,7 @@
 COQMKTOPBYTE:=bin/coqmktop.byte$(EXE)
 COQMKTOPOPT:=bin/coqmktop.opt$(EXE)
 BESTCOQMKTOP:=bin/coqmktop.$(BEST)$(EXE)
-COQMKTOP:=bin/coqmktop$(EXE) 
+COQMKTOP:=bin/coqmktop$(EXE)
 COQCBYTE:=bin/coqc.byte$(EXE)
 COQCOPT:=bin/coqc.opt$(EXE)
 BESTCOQC:=bin/coqc.$(BEST)$(EXE)
@@ -36,7 +36,7 @@ ifeq ($(HASNATDYNLINK),true)
 endif
 
 INSTALLBIN:=install
-INSTALLLIB:=install -m 644 
+INSTALLLIB:=install -m 644
 INSTALLSH:=./install.sh
 MKDIR:=install -d
 
@@ -83,7 +83,7 @@ HTMLSTYLE:=simple
 export TEXINPUTS:=$(COQSRC)/doc:$(HEVEALIB):
 COQTEXOPTS:=-n 72 -image "$(COQSRC)/$(COQTOPEXE) -boot" -sl -small
 
-DOCCOMMON:=doc/common/version.tex doc/common/title.tex doc/common/macros.tex 
+DOCCOMMON:=doc/common/version.tex doc/common/title.tex doc/common/macros.tex
 
 REFMANCOQTEXFILES:=\
   doc/refman/RefMan-gal.v.tex doc/refman/RefMan-ext.v.tex \
@@ -115,7 +115,7 @@ REFMANPNGFILES:=$(REFMANEPSFILES:.eps=.png)
 
 
 ###########################################################################
-# Object and Source files 
+# Object and Source files
 ###########################################################################
 
 COQRUN := coqrun
@@ -135,11 +135,11 @@ LIBREP:=\
   lib/envars.cmo lib/bstack.cmo lib/edit.cmo lib/gset.cmo lib/gmap.cmo \
   lib/tlm.cmo lib/gmapl.cmo lib/profile.cmo lib/explore.cmo \
   lib/predicate.cmo lib/rtree.cmo lib/heap.cmo lib/option.cmo
-# Rem: Cygwin already uses variable LIB 
+# Rem: Cygwin already uses variable LIB
 
 BYTERUN:=\
   kernel/byterun/coq_fix_code.o kernel/byterun/coq_memory.o \
-  kernel/byterun/coq_values.o kernel/byterun/coq_interp.o 
+  kernel/byterun/coq_values.o kernel/byterun/coq_interp.o
 
 KERNEL:=\
   kernel/names.cmo kernel/univ.cmo \
@@ -197,14 +197,14 @@ PARSING:=\
   parsing/pcoq.cmo parsing/egrammar.cmo parsing/g_xml.cmo \
   parsing/ppconstr.cmo parsing/printer.cmo \
   parsing/pptactic.cmo parsing/ppdecl_proof.cmo parsing/tactic_printer.cmo \
-  parsing/printmod.cmo parsing/prettyp.cmo parsing/search.cmo 
+  parsing/printmod.cmo parsing/prettyp.cmo parsing/search.cmo
 
 HIGHPARSING:=\
   parsing/g_constr.cmo parsing/g_vernac.cmo parsing/g_prim.cmo \
   parsing/g_proofs.cmo parsing/g_tactic.cmo parsing/g_ltac.cmo \
   parsing/g_natsyntax.cmo parsing/g_zsyntax.cmo parsing/g_rsyntax.cmo \
   parsing/g_ascii_syntax.cmo parsing/g_string_syntax.cmo \
-  parsing/g_decl_mode.cmo parsing/g_intsyntax.cmo 
+  parsing/g_decl_mode.cmo parsing/g_intsyntax.cmo
 
 TACTICS:=\
   tactics/dn.cmo tactics/termdn.cmo tactics/btermdn.cmo \
@@ -236,7 +236,7 @@ HIGHTACTICS:=\
 
 OMEGACMO:=\
   contrib/omega/omega.cmo contrib/omega/coq_omega.cmo \
-  contrib/omega/g_omega.cmo 
+  contrib/omega/g_omega.cmo
 
 ROMEGACMO:=\
   contrib/romega/const_omega.cmo \
@@ -250,7 +250,7 @@ MICROMEGACMO:=\
 
 RINGCMO:=\
   contrib/ring/quote.cmo contrib/ring/g_quote.cmo \
-  contrib/ring/ring.cmo contrib/ring/g_ring.cmo 
+  contrib/ring/ring.cmo contrib/ring/g_ring.cmo
 
 NEWRINGCMO:=\
   contrib/setoid_ring/newring.cmo
@@ -259,7 +259,7 @@ DPCMO:=contrib/dp/dp_why.cmo contrib/dp/dp_zenon.cmo \
       contrib/dp/dp.cmo contrib/dp/dp_gappa.cmo contrib/dp/g_dp.cmo
 
 FIELDCMO:=\
-  contrib/field/field.cmo 
+  contrib/field/field.cmo
 
 XMLCMO:=\
   contrib/xml/unshare.cmo contrib/xml/xml.cmo contrib/xml/acic.cmo \
@@ -282,6 +282,7 @@ EXTRACTIONCMO:=\
   contrib/extraction/common.cmo \
   contrib/extraction/ocaml.cmo \
   contrib/extraction/haskell.cmo \
+  contrib/extraction/ruby.cmo \
   contrib/extraction/scheme.cmo \
   contrib/extraction/extract_env.cmo \
   contrib/extraction/g_extraction.cmo
@@ -302,7 +303,7 @@ FOCMO:=\
   contrib/firstorder/g_ground.cmo
 
 CCCMO:=contrib/cc/ccalgo.cmo contrib/cc/ccproof.cmo contrib/cc/cctac.cmo \
-  contrib/cc/g_congruence.cmo 
+  contrib/cc/g_congruence.cmo
 
 SUBTACCMO:=contrib/subtac/subtac_utils.cmo contrib/subtac/eterm.cmo \
   contrib/subtac/g_eterm.cmo \
@@ -358,7 +359,7 @@ COQIDECMX:=$(COQIDECMO:.cmo=.cmx)
 COQENVCMO:=$(CONFIG) lib/pp_control.cmo lib/pp.cmo  lib/compat.cmo lib/flags.cmo \
 	lib/util.cmo lib/system.cmo lib/envars.cmo
 
-COQMKTOPCMO:=$(COQENVCMO) scripts/tolink.cmo scripts/coqmktop.cmo 
+COQMKTOPCMO:=$(COQENVCMO) scripts/tolink.cmo scripts/coqmktop.cmo
 COQMKTOPCMX:=$(COQMKTOPCMO:.cmo=.cmx)
 
 COQCCMO:=$(COQENVCMO) $(REVISIONCMO) toplevel/usage.cmo scripts/coqc.cmo
@@ -460,10 +461,10 @@ GRAMMARNEEDEDCMO:=\
   proofs/tacexpr.cmo \
   parsing/lexer.cmo parsing/extend.cmo \
   toplevel/vernacexpr.cmo parsing/pcoq.cmo parsing/q_util.cmo \
-  parsing/q_coqast.cmo 
+  parsing/q_coqast.cmo
 
 CAMLP4EXTENSIONSCMO:=\
-  parsing/argextend.cmo parsing/tacextend.cmo parsing/vernacextend.cmo 
+  parsing/argextend.cmo parsing/tacextend.cmo parsing/vernacextend.cmo
 
 GRAMMARSCMO:=\
   parsing/g_prim.cmo parsing/g_tactic.cmo \
@@ -610,7 +611,7 @@ FSETSBASEVO:=$(addprefix theories/FSets/, \
  FSets.vo \
  FMapInterface.vo       FMapList.vo		FMapFacts.vo 		\
  FMapWeakList.vo      	FMapPositive.vo		FSetToFiniteSet.vo   	\
- FMaps.vo )            
+ FMaps.vo )
 
 FSETS_basic:=
 
@@ -635,7 +636,7 @@ REALSBASEVO:=$(addprefix theories/Reals/, \
  Rdefinitions.vo Raxioms.vo      RIneq.vo	DiscrR.vo \
  Rbase.vo 	 LegacyRfield.vo Rpow_def.vo )
 
-REALS_basic:= 
+REALS_basic:=
 
 REALS_all:=$(addprefix theories/Reals/, \
  R_Ifp.vo 	Rbasic_fun.vo	R_sqr.vo	SplitAbsolu.vo	\
@@ -730,7 +731,7 @@ RATIONALVO:=$(RATIONALSPECVIAQVO) $(RATIONALBIGQVO)
 NUMBERSVO:= $(NUMBERSCOMMONVO) $(NATURALVO) $(INTEGERVO) $(NATINTVO) $(CYCLICVO) $(RATIONALVO)
 
 SETOIDSVO:=$(addprefix theories/Setoids/, \
- Setoid.vo ) 
+ Setoid.vo )
 
 UNICODEVO:=$(addprefix theories/Unicode/, \
  Utf8.vo )
@@ -745,12 +746,14 @@ PROGRAMVO:=$(addprefix theories/Program/, \
  Wf.vo 		Basics.vo	Combinators.vo	Syntax.vo 	Program.vo )
 
 THEORIESVO:=\
-  $(INITVO) $(LOGICVO) $(ARITHVO) $(BOOLVO) $(NARITHVO) $(ZARITHVO) \
-  $(SETOIDSVO) $(LISTSVO) $(STRINGSVO) $(SETSVO) $(FSETSVO) \
-  $(RELATIONSVO) $(WELLFOUNDEDVO) $(REALSVO)  $(SORTINGVO) $(QARITHVO) \
-  $(NUMBERSVO) $(UNICODEVO) $(CLASSESVO) $(PROGRAMVO)
+  $(INITVO)
+# $(LOGICVO) $(ARITHVO) $(BOOLVO) $(NARITHVO) $(ZARITHVO) \
+#  $(SETOIDSVO) $(LISTSVO) $(STRINGSVO) $(SETSVO) $(FSETSVO) \
+#  $(RELATIONSVO) $(WELLFOUNDEDVO) $(REALSVO)  $(SORTINGVO) $(QARITHVO) \
+#  $(NUMBERSVO) $(UNICODEVO) $(CLASSESVO) $(PROGRAMVO)
 
-THEORIESLIGHTVO:= $(INITVO) $(LOGICVO) $(ARITHVO)
+THEORIESLIGHTVO:= $(INITVO)
+# $(LOGICVO) $(ARITHVO)
 
 ## Contribs
 
@@ -791,12 +794,12 @@ NEWRINGVO:=$(addprefix contrib/setoid_ring/, \
  Field_theory.vo	Field_tac.vo \
  Field.vo		RealField.vo )
 
-XMLVO:= 
+XMLVO:=
 
 FOURIERVO:=$(addprefix contrib/fourier/, \
  Fourier_util.vo    	Fourier.vo )
 
-FUNINDVO:= 
+FUNINDVO:=
 
 RECDEFVO:=$(addprefix contrib/funind/, \
  Recdef.vo )
@@ -838,14 +841,14 @@ MANPAGES:=man/coq-tex.1 man/coqdep.1 man/gallina.1 \
 PCOQMANPAGES:=man/coq-interface.1 man/coq-parser.1
 
 RECTYPESML:=kernel/term.ml library/nametab.ml proofs/tacexpr.ml \
-  parsing/pptactic.ml 
+  parsing/pptactic.ml
 
 
 #########################################################
 # .mli files by directory (used for dependencies graphs #
 #########################################################
 
-# We use wildcard to get rid of .cmo that do not have a .mli 
+# We use wildcard to get rid of .cmo that do not have a .mli
 KERNELMLI:=$(wildcard $(KERNEL:.cmo=.mli))
 INTERPMLI:=$(wildcard $(INTERP:.cmo=.mli))
 PRETYPINGMLI:=$(wildcard $(PRETYPING:.cmo=.mli))
@@ -888,7 +891,7 @@ STAGE3_TARGETS:=world install coqide coqide-files coq coqlib \
   $(DOC_TARGETS) $(VO_TARGETS) validate
 
 
-# For emacs: 
-# Local Variables: 
-# mode: makefile 
+# For emacs:
+# Local Variables:
+# mode: makefile
 # End:

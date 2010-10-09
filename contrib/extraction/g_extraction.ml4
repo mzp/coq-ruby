@@ -28,15 +28,17 @@ open Table
 open Extract_env
 
 let pr_language = function
-  | Ocaml -> str "Ocaml" 
+  | Ocaml -> str "Ocaml"
   | Haskell -> str "Haskell"
   | Scheme -> str "Scheme"
+  | Ruby   -> str "Ruby"
 
 VERNAC ARGUMENT EXTEND language
 PRINTED BY pr_language
 | [ "Ocaml" ] -> [ Ocaml ]
 | [ "Haskell" ] -> [ Haskell ]
 | [ "Scheme" ] -> [ Scheme ]
+| [ "Ruby" ] -> [ Ruby ]
 END
 
 (* Extraction commands *)
@@ -47,7 +49,7 @@ VERNAC COMMAND EXTEND Extraction
 | [ "Recursive" "Extraction" ne_global_list(l) ] -> [ full_extraction None l ]
 
 (* Monolithic extraction to a file *)
-| [ "Extraction" string(f) ne_global_list(l) ] 
+| [ "Extraction" string(f) ne_global_list(l) ]
   -> [ full_extraction (Some f) l ]
 END
 
@@ -64,18 +66,18 @@ END
 
 (* Target Language *)
 VERNAC COMMAND EXTEND ExtractionLanguage
-| [ "Extraction" "Language" language(l) ] 
+| [ "Extraction" "Language" language(l) ]
   -> [ extraction_language l ]
 END
 
 VERNAC COMMAND EXTEND ExtractionInline
 (* Custom inlining directives *)
-| [ "Extraction" "Inline" ne_global_list(l) ] 
+| [ "Extraction" "Inline" ne_global_list(l) ]
   -> [ extraction_inline true l ]
 END
 
 VERNAC COMMAND EXTEND ExtractionNoInline
-| [ "Extraction" "NoInline" ne_global_list(l) ] 
+| [ "Extraction" "NoInline" ne_global_list(l) ]
   -> [ extraction_inline false l ]
 END
 
