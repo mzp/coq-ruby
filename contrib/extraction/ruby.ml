@@ -38,6 +38,7 @@ let preamble _ _ usf =
   ++ (if usf.mldummy then str "def __; end\n" else mt ())
   ++ str "def let(x,&f); f.call(x) end\n"
   ++ str "def match(expr, *fs); tag,args = expr; _,f = fs.assoc(tag); f.call(*args) end\n"
+  ++ str "def fix(*fs); fs.map{|f| g = lambda{|*args| f[g][*args] }} end"
   ++ str "\n"
 
 let pr_id id =
@@ -65,7 +66,7 @@ let rec pp_abst st = function
 let rec pp_apply st _x = function
   | [] -> st
   | arg::args ->
-      hov 2 (pp_apply (st ++ str ".call(" ++ arg ++ str ")") _x args)
+      hov 2 (pp_apply (st ++ bracket arg) _x args)
 
 let pp_global k r = str (Common.pp_global k r)
 
@@ -102,13 +103,13 @@ let rec pp_expr env args =
 	  ++ bracket (prlist_with_sep spc (pp_cons_args env) args')
 	in
 	if i = Coinductive then
-	  str "lambda" ++ brace st
+	  str "lambda" ++ bracket st
 	else
 	  st
     | MLcase ((i,_),t, pv) ->
 	let e =
 	  if i <> Coinductive then pp_expr env [] t
-	  else pp_expr env [] t ++  str ".call()"
+	  else pp_expr env [] t ++  str "[]"
 	in
 	apply (v 3 (str "match" ++ paren (e ++ str "," ++ pp_pat env pv)))
     | MLfix (i,ids,defs) ->
@@ -129,7 +130,7 @@ and pp_cons_args env = function
 	str ":" ++ pp_global Cons r
       ++ str ","
       ++ bracket (prlist_with_sep spc (pp_cons_args env) args)
-  | e -> str "," ++ pp_expr env [] e
+  | e -> pp_expr env [] e
 
 
 and pp_one_pat env (r,ids,t) =
@@ -151,15 +152,14 @@ and pp_pat env pv =
     and passed here just for convenience. *)
 
 and pp_fix env j (ids,bl) args =
-    paren
-      (str "letrec " ++
-       (v 0 (paren
-	       (prvect_with_sep fnl
-		  (fun (fi,ti) ->
-		     paren ((pr_id fi) ++ spc () ++ (pp_expr env [] ti)))
-		  (array_map2 (fun id b -> (id,b)) ids bl)) ++
-	     fnl () ++
-      	     hov 2 (pp_apply (pr_id (ids.(j))) true args))))
+  str "fix"
+  ++ (paren
+	(prvect_with_sep (fun _ -> str "," ++ fnl ())
+	   (fun (fi,ti) ->
+	      str "lambda" ++ brace (pipe (pr_id fi) ++ spc () ++ (pp_expr env [] ti)))
+	   (array_map2 (fun id b -> (id,b)) ids bl)))
+  ++ bracket (int j)
+
 
 (*s Pretty-printing of a declaration. *)
 
