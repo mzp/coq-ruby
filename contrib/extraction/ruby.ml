@@ -33,8 +33,8 @@ let keywords =
     Idset.empty
 
 let preamble _ _ usf =
-  str "# This extracted Ruby Code\n"
-  ++ str "# available at \n"
+  str "# -*- ruby-mode -*-\n"
+  ++ str "# This extracted Ruby Code\n"
   ++ (if usf.mldummy then str "def __; end\n" else mt ())
   ++ str "def let(x,&f); f.call(x) end\n"
   ++ str "def match(expr, *fs); tag,args = expr; _,f = fs.assoc(tag); f.call(*args) end\n"
@@ -117,12 +117,12 @@ let rec pp_expr env args =
       	pp_fix env' i (Array.of_list (List.rev ids'),defs) args
     | MLexn s ->
 	(* An [MLexn] may be applied, but I don't really care. *)
-	paren (str "error" ++ spc () ++ qs s)
+	str "raise" ++ spc () ++ qs s
     | MLdummy ->
 	str "__" (* An [MLdummy] may be applied, but I don't really care. *)
     | MLmagic a ->
 	pp_expr env args a
-    | MLaxiom -> paren (str "error \"AXIOM TO BE REALIZED\"")
+    | MLaxiom -> str "raise \"AXIOM TO BE REALIZED\""
 
 and pp_cons_args env = function
   | MLcons (i,r,args) when i<>Coinductive ->
@@ -189,9 +189,9 @@ let pp_decl = function
 let pp_structure_elem = function
   | (l,SEdecl d) -> pp_decl d
   | (l,SEmodule m) ->
-      failwith "TODO: Scheme extraction of modules not implemented yet"
+      failwith "TODO: Ruby extraction of modules not implemented yet"
   | (l,SEmodtype m) ->
-      failwith "TODO: Scheme extraction of modules not implemented yet"
+      failwith "TODO: Ruby extraction of modules not implemented yet"
 
 let pp_struct =
   let pp_sel (mp,sel) =
