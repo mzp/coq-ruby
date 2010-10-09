@@ -45,12 +45,17 @@ let pr_id id =
   str s
 
 let paren = pp_par false
+let brace   st = str "{" ++ st ++ str "}"
+let bracket st = str "[" ++ st ++ str "]"
+let pipe    st = str "|" ++ st ++ str "|"
+let def name st =
+  (str "def ") ++ name ++ (str ";") ++ st ++ (str " end")
 
-let pp_abst st = function
-  | [] -> assert false
-  | [id] -> paren (str "lambda " ++ paren (pr_id id) ++ spc () ++ st)
-  | l -> paren
-	(str "lambdas " ++ paren (prlist_with_sep spc pr_id l) ++ spc () ++ st)
+let rec pp_abst st = function
+  | [] -> st
+  | x::xs ->
+      str "lambda" ++
+	brace (pipe (pr_id x) ++ pp_abst st xs)
 
 let pp_apply st _ = function
   | [] -> st
@@ -161,8 +166,8 @@ let pp_decl = function
       prvect_with_sep fnl
 	(fun (pi,ti) ->
 	   hov 2
-	     (paren (pi ++ str "=" ++
-		     (pp_expr (empty_env ()) [] ti))
+	     ((def pi
+		 (pp_expr (empty_env ()) [] ti))
 	      ++ fnl ()))
 	(array_map2 (fun p b -> (p,b)) ppv defs) ++
       fnl ()
@@ -170,11 +175,11 @@ let pp_decl = function
       if is_inline_custom r then mt ()
       else
 	if is_custom r then
-	  hov 2 (paren (pp_global Term r ++ str "=" ++
-			  str (find_custom r))) ++ fnl () ++ fnl ()
+	  hov 2 ((def (pp_global Term r) (str (find_custom r))))
+	  ++ fnl () ++ fnl ()
 	else
-	  hov 2 (paren (pp_global Term r ++ str "=" ++
-			  pp_expr (empty_env ()) [] a)) ++ fnl () ++ fnl ()
+	  hov 2 ((def (pp_global Term r) (pp_expr (empty_env ()) [] a)))
+	  ++ fnl () ++ fnl ()
 
 let pp_structure_elem = function
   | (l,SEdecl d) -> pp_decl d
