@@ -1,22 +1,19 @@
-Definition id {A} (x : A) := x.
-Definition const {A} (x y : A) := x.
-Definition app {A B C} (x : A -> B -> C) (y : A) (z : B) :=
-  let f := x y in
-    f z.
+Fixpoint fact n :=
+match n with
+  O => 1
+| S O => 1
+| S m => n * fact m
+end.
 
-Definition one := 1.
-Definition is_zero (n : nat) :=
-  match n with
-    | O => true
-    | S _ => false
+CoInductive Stream (A: Type) : Type :=
+  | Cons : A -> Stream A -> Stream A.
+Definition head {A} (s : Stream A) :=
+  match s with
+    | Cons a _ => a
   end.
 
-Definition fact1 := id ((fix f n :=
-match n with
-| O => 1
-| S m => n * f m
-end)).
+CoFixpoint repeat {A} (a:A) : Stream A :=
+  Cons A a (repeat a).
 
-Definition three := 3.
 Extraction Language Ruby.
-Extraction "test" fact1 three.
+Extraction "stream" fact repeat head.

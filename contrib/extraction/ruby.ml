@@ -29,7 +29,7 @@ let keywords =
      "false";"for";"if";"in";"module";"next";"nil";"not";"or";
      "redo";"rescue";"retry";"return";"self";"super";"then";
      "true";"undef";"unless";"until";"when";"while";"yield";
-     "lambda";"proc";"__";"_"]
+     "lambda";"proc";"match";"fix";"let";"__";"_"]
     Idset.empty
 
 let preamble _ _ usf =
@@ -100,10 +100,10 @@ let rec pp_expr env args =
 	  bracket @@
 	    str ":" ++ pp_global Cons r
 	  ++ str ","
-	  ++ bracket (prlist_with_sep spc (pp_cons_args env) args')
+	  ++ bracket (prlist_with_sep (fun _ -> str "," ++ spc ()) (pp_cons_args env) args')
 	in
 	if i = Coinductive then
-	  str "lambda" ++ bracket st
+	  str "lambda" ++ brace st
 	else
 	  st
     | MLcase ((i,_),t, pv) ->
